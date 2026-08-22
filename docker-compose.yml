@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  financial-ledger-api:
+    build: .
+    container_name: financial_ledger_core
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=sqlite:///./ledger.db
+    restart: unless-stopped

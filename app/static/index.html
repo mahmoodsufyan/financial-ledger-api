@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏛️ Enterprise Multi-Currency General Ledger & Financial System</title>
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif; }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.5); border-radius: 4px; }
+  </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white text-lg">
+          <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+            Enterprise Financial Core & General Ledger
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">74 Enterprise Modules</span>
+          </h1>
+          <p class="text-xs text-slate-400">Double-Entry Ledger, 3-Tier Posting Lifecycle & Multi-Currency Revaluation</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <a href="../../docs/case-studies/enterprise-financial-accounting-system.md" target="_blank" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-lines text-emerald-400"></i> Read Case Study
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="bg-slate-900/50 border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-2 sm:space-x-4 overflow-x-auto">
+      <button id="tabBtnVoucher" onclick="switchTab('voucher')" class="py-3 px-3 text-sm font-medium border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Double-Entry Voucher Simulator
+      </button>
+      <button id="tabBtnCOA" onclick="switchTab('coa')" class="py-3 px-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-sitemap"></i> Chart of Accounts Explorer
+      </button>
+      <button id="tabBtnTrial" onclick="switchTab('trial')" class="py-3 px-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-chart-pie"></i> Trial Balance & FX Revaluation
+      </button>
+      <button id="tabBtnModules" onclick="switchTab('modules')" class="py-3 px-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition whitespace-nowrap">
+        <i class="fa-solid fa-cubes"></i> 74 Modules Breakdown
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: DOUBLE-ENTRY VOUCHER SIMULATOR -->
+    <!-- ========================================== -->
+    <div id="tabContentVoucher" class="space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Voucher Entry Card (7 cols) -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-pen-to-square text-emerald-400"></i> New Financial Voucher Entry
+            </h2>
+            <div class="flex items-center gap-2">
+              <button onclick="loadSampleVoucher('loan_disbursement')" class="text-xs px-2.5 py-1 bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 rounded hover:bg-emerald-900/50 transition">
+                Sample: Loan Disbursement
+              </button>
+              <button onclick="loadSampleVoucher('vendor_payment')" class="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded hover:bg-slate-700 transition">
+                Sample: Vendor Payout
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Voucher Type (النوع)</label>
+              <select id="vType" class="w-full px-2.5 py-1.5 bg-slate-950/60 border border-slate-700 rounded-lg text-xs font-medium text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                <option value="JV">Journal Voucher (قيد يومية)</option>
+                <option value="PV">Payment Voucher (سند صرف)</option>
+                <option value="RV">Receipt Voucher (سند قبض)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Currency (العملة)</label>
+              <select id="vCurr" onchange="calculateVoucher()" class="w-full px-2.5 py-1.5 bg-slate-950/60 border border-slate-700 rounded-lg text-xs font-medium text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                <option value="USD">USD ($) - Rate: 1.00</option>
+                <option value="SAR">SAR (ر.س) - Rate: 3.75</option>
+                <option value="YER">YER (ر.ي) - Rate: 535.00</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1">Cost Center (مركز التكلفة)</label>
+              <select id="vCostCenter" class="w-full px-2.5 py-1.5 bg-slate-950/60 border border-slate-700 rounded-lg text-xs font-medium text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+                <option value="HQ">CC-100: Main Headquarter (المركز الرئيسي)</option>
+                <option value="NORTH">CC-201: North Branch (فرع الشمال)</option>
+                <option value="SOUTH">CC-202: South Branch (فرع الجنوب)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Description / Memo (البيان)</label>
+            <input type="text" id="vMemo" value="Loan disbursement payout for agricultural micro-facility #2026-881" 
+                   class="w-full px-3 py-1.5 bg-slate-950/60 border border-slate-700 rounded-lg text-xs font-medium text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <!-- Line items table -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Double-Entry Lines (أطراف القيد)</span>
+              <button onclick="addLine()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-plus-circle"></i> Add Leg
+              </button>
+            </div>
+            
+            <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/40">
+              <table class="w-full text-xs text-left">
+                <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th class="py-2 px-3">Account Code & Title</th>
+                    <th class="py-2 px-2 w-28 text-right">Debit ($)</th>
+                    <th class="py-2 px-2 w-28 text-right">Credit ($)</th>
+                    <th class="py-2 px-2 text-center w-10"></th>
+                  </tr>
+                </thead>
+                <tbody id="lineItemsBody" class="divide-y divide-slate-800">
+                  <!-- Generated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Total & Validation Bar -->
+          <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+            <div class="space-y-0.5">
+              <div class="text-xs text-slate-400">Total Debit: <span id="sumDebit" class="font-bold text-white">$0.00</span></div>
+              <div class="text-xs text-slate-400">Total Credit: <span id="sumCredit" class="font-bold text-white">$0.00</span></div>
+            </div>
+            <div class="text-right">
+              <div id="balanceBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                <i class="fa-solid fa-check-circle"></i> Balanced (متوازن)
+              </div>
+              <div id="diffDisplay" class="text-[11px] text-slate-400 mt-0.5">Difference: $0.00</div>
+            </div>
+          </div>
+
+          <!-- 3-Stage State Machine Action Buttons -->
+          <div class="pt-2 border-t border-slate-800 flex items-center justify-between gap-3">
+            <div class="text-xs text-slate-400 flex items-center gap-2">
+              <span>Lifecycle:</span>
+              <span id="currentStatusBadge" class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-700 text-slate-200">DRAFT</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="changeStatus('REVIEWED')" id="btnReview" class="px-3 py-1.5 text-xs font-semibold bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-lg transition flex items-center gap-1.5">
+                <i class="fa-solid fa-user-check"></i> 1. Audit & Review (مراجعة)
+              </button>
+              <button onclick="changeStatus('POSTED')" id="btnPost" class="px-4 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-lg shadow-emerald-600/20 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-lock"></i> 2. Atomic Post (ترحيل نهائي)
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Ledger & Audit Stream (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          
+          <!-- State Machine Explainer Card -->
+          <div class="glass-card rounded-2xl p-4 shadow-xl border-l-4 border-emerald-500 space-y-2">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-shield-halved text-emerald-400"></i> Deterministic 3-Stage Lifecycle
+            </h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Every financial transaction passes through rigorous transactional validation before reaching the General Ledger:
+            </p>
+            <div class="grid grid-cols-3 gap-2 pt-1 text-center text-xs">
+              <div class="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                <div class="font-bold text-slate-300">1. Draft</div>
+                <div class="text-[10px] text-slate-500">Editable entry</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                <div class="font-bold text-amber-400">2. Reviewed</div>
+                <div class="text-[10px] text-slate-500">Supervisory check</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
+                <div class="font-bold text-emerald-400">3. Posted</div>
+                <div class="text-[10px] text-slate-500">Immutable Ledger</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Posted Ledger Transactions Feed -->
+          <div class="glass-card rounded-2xl p-4 shadow-xl space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+              <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-book text-emerald-400"></i> Posted General Ledger Records
+              </h3>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono" id="postedCount">3 Posted</span>
+            </div>
+            
+            <div id="postedLedgerList" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+              <!-- Generated via JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: CHART OF ACCOUNTS EXPLORER -->
+    <!-- ========================================== -->
+    <div id="tabContentCOA" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700/60 pb-3">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-sitemap text-emerald-400"></i> Hierarchical Chart of Accounts (الدليل المحاسبي الشجري)
+            </h2>
+            <p class="text-xs text-slate-400">Multi-level recursive parent-child tree structure with normal debit/credit classifications</p>
+          </div>
+          <div class="w-full sm:w-64">
+            <input type="text" id="coaSearch" onkeyup="filterCOA()" placeholder="Search account code or name..." 
+                   class="w-full px-3 py-1.5 bg-slate-950/60 border border-slate-700 rounded-lg text-xs text-white focus:ring-1 focus:ring-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/50">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+              <tr>
+                <th class="py-2.5 px-3">Account Code</th>
+                <th class="py-2.5 px-3">Account Name (English / Arabic)</th>
+                <th class="py-2.5 px-3">Category</th>
+                <th class="py-2.5 px-3">Normal Balance</th>
+                <th class="py-2.5 px-3 text-right">Current Ledger Balance ($)</th>
+              </tr>
+            </thead>
+            <tbody id="coaTableBody" class="divide-y divide-slate-800/60 font-mono">
+              <!-- Generated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: TRIAL BALANCE & FX REVALUATION -->
+    <!-- ========================================== -->
+    <div id="tabContentTrial" class="hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Trial Balance Sheet (7 cols) -->
+        <div class="lg:col-span-7 glass-card rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-3">
+            <div>
+              <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                <i class="fa-solid fa-scale-balanced text-emerald-400"></i> Real-Time Trial Balance (ميزان المراجعة)
+              </h2>
+              <p class="text-xs text-slate-400">Consolidated debit & credit balance summary across all ledger accounts</p>
+            </div>
+            <button onclick="runFxRevaluation()" class="px-3 py-1.5 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-lg transition flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate"></i> Run FX Revaluation
+            </button>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/50">
+            <table class="w-full text-xs text-left font-mono">
+              <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                <tr>
+                  <th class="py-2.5 px-3">Code</th>
+                  <th class="py-2.5 px-3">Account Title</th>
+                  <th class="py-2.5 px-3 text-right">Debit ($)</th>
+                  <th class="py-2.5 px-3 text-right">Credit ($)</th>
+                </tr>
+              </thead>
+              <tbody id="tbBody" class="divide-y divide-slate-800/60">
+                <!-- Generated via JS -->
+              </tbody>
+              <tfoot class="bg-slate-900/90 font-bold border-t border-slate-700 text-slate-200">
+                <tr>
+                  <td colspan="2" class="py-2.5 px-3">Total Consolidated Sum</td>
+                  <td id="tbTotalDebit" class="py-2.5 px-3 text-right text-emerald-400">$0.00</td>
+                  <td id="tbTotalCredit" class="py-2.5 px-3 text-right text-emerald-400">$0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- Financial Breakdown & Chart (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="glass-card rounded-2xl p-5 shadow-xl space-y-3">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-chart-donut text-emerald-400"></i> Asset & Expense Distribution
+            </h3>
+            <div class="h-56 relative">
+              <canvas id="ledgerChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl p-4 shadow-xl space-y-2">
+            <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-circle-info text-emerald-400"></i> Automated Currency Revaluation Engine
+            </h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Period-end closing calculates unrealized gains/losses on foreign currency balances and posts automatic balancing entries into account <code>4201 - Unrealized FX Differences</code>.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: 74 ENTERPRISE MODULES CATALOG -->
+    <!-- ========================================== -->
+    <div id="tabContentModules" class="hidden space-y-6">
+      <div class="glass-card rounded-2xl p-5 shadow-xl space-y-4">
+        <div class="border-b border-slate-700/60 pb-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+            <i class="fa-solid fa-cubes text-emerald-400"></i> 74 Enterprise Modules & Screens Breakdown
+          </h2>
+          <p class="text-xs text-slate-400">Direct architecture mapping of all pages and modules extracted from the production APEX system</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="modulesGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Javascript Simulation Logic -->
+  <script>
+    // State
+    let currentTab = 'voucher';
+    let voucherStatus = 'DRAFT';
+    let ledgerHistory = [
+      { id: 'JV-2026-001', type: 'JV', memo: 'Opening Balance Capital Allocation', amount: 500000, date: '2026-08-01', status: 'POSTED' },
+      { id: 'PV-2026-042', type: 'PV', memo: 'Headquarter Operating Lease Payment', amount: 12500, date: '2026-08-15', status: 'POSTED' },
+      { id: 'RV-2026-109', type: 'RV', memo: 'Client Micro-Installment Inward Remittance', amount: 8450, date: '2026-08-20', status: 'POSTED' }
+    ];
+
+    let accounts = [
+      { code: '1010', nameEn: 'Cash on Hand (Vault)', nameAr: 'الصندوق الرئيسي', cat: 'Asset', normal: 'Debit', balance: 145950 },
+      { code: '1020', nameEn: 'Commercial Bank Account (USD)', nameAr: 'البنك التجاري (دولار)', cat: 'Asset', normal: 'Debit', balance: 350000 },
+      { code: '1050', nameEn: 'Financing & Loans Portfolio', nameAr: 'محفظة التمويلات والقروض', cat: 'Asset', normal: 'Debit', balance: 420000 },
+      { code: '2010', nameEn: 'Suppliers & Vendor Payables', nameAr: 'حسابات الموردين والدائنين', cat: 'Liability', normal: 'Credit', balance: 45000 },
+      { code: '3010', nameEn: 'Paid-in Share Capital', nameAr: 'رأس المال المدفوع', cat: 'Equity', normal: 'Credit', balance: 800000 },
+      { code: '4010', nameEn: 'Financing Return & Murabaha Revenue', nameAr: 'إيرادات عوائد التمويل', cat: 'Revenue', normal: 'Credit', balance: 95400 },
+      { code: '4201', nameEn: 'Unrealized FX Gain/Loss', nameAr: 'فروق تقييم العملات الأجنبية', cat: 'Revenue', normal: 'Credit', balance: 3500 },
+      { code: '5010', nameEn: 'General & Administrative Expenses', nameAr: 'المصروفات العمومية والإدارية', cat: 'Expense', normal: 'Debit', balance: 27950 }
+    ];
+
+    let currentLines = [
+      { account: '1050', debit: 25000, credit: 0 },
+      { account: '1020', debit: 0, credit: 25000 }
+    ];
+
+    let chartInstance = null;
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const tabs = ['voucher', 'coa', 'trial', 'modules'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const content = document.getElementById('tabContent' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (t === tab) {
+          btn.className = 'py-3 px-3 text-sm font-medium border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2 transition whitespace-nowrap';
+          content.classList.remove('hidden');
+        } else {
+          btn.className = 'py-3 px-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition whitespace-nowrap';
+          content.classList.add('hidden');
+        }
+      });
+
+      if (tab === 'trial') {
+        renderTrialBalance();
+        renderChart();
+      } else if (tab === 'coa') {
+        renderCOA();
+      } else if (tab === 'modules') {
+        renderModules();
+      }
+    }
+
+    function renderLines() {
+      const tbody = document.getElementById('lineItemsBody');
+      tbody.innerHTML = '';
+      currentLines.forEach((line, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/50';
+        tr.innerHTML = `
+          <td class="py-2 px-3">
+            <select onchange="updateLine(${index}, 'account', this.value)" class="w-full px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-white">
+              ${accounts.map(a => `<option value="${a.code}" ${a.code === line.account ? 'selected' : ''}>${a.code} - ${a.nameEn} (${a.nameAr})</option>`).join('')}
+            </select>
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="100" min="0" value="${line.debit}" oninput="updateLine(${index}, 'debit', parseFloat(this.value) || 0)" 
+                   class="w-full px-2 py-1 text-right bg-slate-900 border border-slate-700 rounded text-xs font-semibold text-emerald-400">
+          </td>
+          <td class="py-2 px-2 text-right">
+            <input type="number" step="100" min="0" value="${line.credit}" oninput="updateLine(${index}, 'credit', parseFloat(this.value) || 0)" 
+                   class="w-full px-2 py-1 text-right bg-slate-900 border border-slate-700 rounded text-xs font-semibold text-cyan-400">
+          </td>
+          <td class="py-2 px-2 text-center">
+            <button onclick="removeLine(${index})" class="text-slate-500 hover:text-rose-400 text-xs">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      calculateVoucher();
+    }
+
+    function addLine() {
+      currentLines.push({ account: '1010', debit: 0, credit: 0 });
+      renderLines();
+    }
+
+    function removeLine(index) {
+      if (currentLines.length <= 2) {
+        alert('A double-entry voucher must have at least 2 leg items.');
+        return;
+      }
+      currentLines.splice(index, 1);
+      renderLines();
+    }
+
+    function updateLine(index, field, value) {
+      currentLines[index][field] = value;
+      calculateVoucher();
+    }
+
+    function calculateVoucher() {
+      const sumDebit = currentLines.reduce((acc, l) => acc + (parseFloat(l.debit) || 0), 0);
+      const sumCredit = currentLines.reduce((acc, l) => acc + (parseFloat(l.credit) || 0), 0);
+      const diff = Math.abs(sumDebit - sumCredit);
+
+      document.getElementById('sumDebit').innerText = '$' + sumDebit.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('sumCredit').innerText = '$' + sumCredit.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('diffDisplay').innerText = 'Difference: $' + diff.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      const badge = document.getElementById('balanceBadge');
+      const btnPost = document.getElementById('btnPost');
+
+      if (diff === 0 && sumDebit > 0) {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+        badge.innerHTML = '<i class="fa-solid fa-check-circle"></i> Balanced (متوازن)';
+        btnPost.disabled = false;
+        btnPost.classList.remove('opacity-50', 'cursor-not-allowed');
+      } else {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40';
+        badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Out of Balance (غير متوازن)';
+        btnPost.disabled = true;
+        btnPost.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
+
+    function changeStatus(newStatus) {
+      voucherStatus = newStatus;
+      const statusBadge = document.getElementById('currentStatusBadge');
+      if (newStatus === 'REVIEWED') {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        statusBadge.innerText = 'REVIEWED (تمت المراجعة)';
+      } else if (newStatus === 'POSTED') {
+        statusBadge.className = 'px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        statusBadge.innerText = 'POSTED (تم الترحيل)';
+        
+        // Add to history
+        const sum = currentLines.reduce((acc, l) => acc + (parseFloat(l.debit) || 0), 0);
+        const memo = document.getElementById('vMemo').value;
+        const type = document.getElementById('vType').value;
+        const newRecord = {
+          id: `${type}-2026-${Math.floor(100 + Math.random() * 900)}`,
+          type: type,
+          memo: memo,
+          amount: sum,
+          date: new Date().toISOString().split('T')[0],
+          status: 'POSTED'
+        };
+        ledgerHistory.unshift(newRecord);
+        renderLedgerHistory();
+        alert('Voucher posted successfully to General Ledger with immutable audit log!');
+      }
+    }
+
+    function renderLedgerHistory() {
+      const container = document.getElementById('postedLedgerList');
+      container.innerHTML = '';
+      document.getElementById('postedCount').innerText = `${ledgerHistory.length} Posted`;
+      ledgerHistory.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between';
+        div.innerHTML = `
+          <div>
+            <div class="text-xs font-bold text-white flex items-center gap-2">
+              <span>${item.id}</span>
+              <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-normal">${item.type}</span>
+            </div>
+            <div class="text-[11px] text-slate-400 truncate max-w-[200px]">${item.memo}</div>
+          </div>
+          <div class="text-right font-mono">
+            <div class="text-xs font-bold text-emerald-400">$${item.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <div class="text-[10px] text-slate-500">${item.date}</div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function loadSampleVoucher(sampleType) {
+      if (sampleType === 'loan_disbursement') {
+        document.getElementById('vType').value = 'PV';
+        document.getElementById('vMemo').value = 'Automated Loan Disbursement for Contract #LN-2026-904';
+        currentLines = [
+          { account: '1050', debit: 35000, credit: 0 },
+          { account: '1020', debit: 0, credit: 35000 }
+        ];
+      } else {
+        document.getElementById('vType').value = 'PV';
+        document.getElementById('vMemo').value = 'Vendor Supplier Remittance Payout via Central Vault';
+        currentLines = [
+          { account: '2010', debit: 12000, credit: 0 },
+          { account: '1010', debit: 0, credit: 12000 }
+        ];
+      }
+      voucherStatus = 'DRAFT';
+      document.getElementById('currentStatusBadge').className = 'px-2 py-0.5 rounded text-[11px] font-bold bg-slate-700 text-slate-200';
+      document.getElementById('currentStatusBadge').innerText = 'DRAFT';
+      renderLines();
+    }
+
+    function renderCOA() {
+      const tbody = document.getElementById('coaTableBody');
+      tbody.innerHTML = '';
+      accounts.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-bold text-emerald-400">${acc.code}</td>
+          <td class="py-2.5 px-3 font-sans">
+            <span class="font-medium text-slate-200">${acc.nameEn}</span>
+            <span class="text-xs text-slate-400 ml-2 font-arabic font-normal">(${acc.nameAr})</span>
+          </td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">${acc.cat}</span></td>
+          <td class="py-2.5 px-3 text-slate-400">${acc.normal}</td>
+          <td class="py-2.5 px-3 text-right font-bold text-slate-100">$${acc.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterCOA() {
+      const q = document.getElementById('coaSearch').value.toLowerCase();
+      const rows = document.querySelectorAll('#coaTableBody tr');
+      rows.forEach(r => {
+        const text = r.innerText.toLowerCase();
+        r.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    function renderTrialBalance() {
+      const tbody = document.getElementById('tbBody');
+      tbody.innerHTML = '';
+      let totalD = 0;
+      let totalC = 0;
+
+      accounts.forEach(acc => {
+        let d = acc.normal === 'Debit' ? acc.balance : 0;
+        let c = acc.normal === 'Credit' ? acc.balance : 0;
+        totalD += d;
+        totalC += c;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60';
+        tr.innerHTML = `
+          <td class="py-2 px-3 text-slate-400">${acc.code}</td>
+          <td class="py-2 px-3 font-sans text-slate-200">${acc.nameEn}</td>
+          <td class="py-2 px-3 text-right ${d > 0 ? 'text-emerald-400' : 'text-slate-600'}">${d > 0 ? '$' + d.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
+          <td class="py-2 px-3 text-right ${c > 0 ? 'text-cyan-400' : 'text-slate-600'}">${c > 0 ? '$' + c.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('tbTotalDebit').innerText = '$' + totalD.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('tbTotalCredit').innerText = '$' + totalC.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    }
+
+    function runFxRevaluation() {
+      accounts.find(a => a.code === '4201').balance += 1250;
+      accounts.find(a => a.code === '1020').balance += 1250;
+      renderTrialBalance();
+      alert('FX Revaluation executed: Foreign currency balances adjusted for latest exchange rates!');
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('ledgerChart');
+      if (!ctx) return;
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Cash & Bank', 'Loan Portfolio', 'Operating Expenses', 'Liabilities & Equity'],
+          datasets: [{
+            data: [495950, 420000, 27950, 845000],
+            backgroundColor: ['#10b981', '#06b6d4', '#f59e0b', '#6366f1'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    function renderModules() {
+      const container = document.getElementById('modulesGrid');
+      const domains = [
+        { title: 'Journal & Voucher Management', count: '14 Modules', pages: 'Pages 2, 5, 6, 7, 10, 13, 14, 15, 22', icon: 'fa-file-invoice-dollar', color: 'emerald', desc: 'Daily journals, opening entries, payment and cash receipt vouchers with line-item detail.' },
+        { title: 'Supervisory Review & Verification', count: '8 Modules', pages: 'Pages 11, 12, 16, 18, 23', icon: 'fa-clipboard-check', color: 'amber', desc: 'Audit checkpoints for review of daily vouchers before final posting.' },
+        { title: 'Atomic Posting Engine', count: '10 Modules', pages: 'Pages 19, 20, 21, 24, 25', icon: 'fa-lock', color: 'blue', desc: 'ACID double-entry transaction posting into the immutable general ledger.' },
+        { title: 'Chart of Accounts & Cost Centers', count: '12 Modules', pages: 'Pages 3, 4, 28, 29, 30, 31, 41, 42, 55, 56', icon: 'fa-sitemap', color: 'purple', desc: 'Hierarchical tree accounts, bank registers, and branch cost-center security schemes.' },
+        { title: 'Automated Operations & Loan Bridge', count: '10 Modules', pages: 'Pages 43, 45, 46, 47, 50, 52, 53', icon: 'fa-arrows-split-up-and-left', color: 'cyan', desc: 'Auto-posting for loan disbursements, vendor remittances, and Excel batch imports.' },
+        { title: 'Closings & Multi-Currency', count: '8 Modules', pages: 'Pages 26, 27, 35, 36, 38, 39, 40, 44', icon: 'fa-coins', color: 'yellow', desc: 'Fiscal years, currency exchange rates, foreign exchange revaluation, and P&L closing.' },
+        { title: 'Financial Intelligence & Reports', count: '8 Modules', pages: 'Pages 8, 9, 17, 32, 37, 54, 57', icon: 'fa-chart-line', color: 'rose', desc: 'Multi-currency Trial Balance, Cash Flow statements, Ledger explorer, and JasperReports.' },
+        { title: 'Enterprise RBAC & Auditing', count: '10 Modules', pages: 'Pages 58, 10010-10024, 10100', icon: 'fa-user-shield', color: 'indigo', desc: 'Activity dashboard, application error logs, top users, and granular access control.' }
+      ];
+
+      container.innerHTML = domains.map(d => `
+        <div class="glass-card rounded-xl p-4 space-y-2 border-t-2 border-${d.color}-500 hover:border-${d.color}-400 transition">
+          <div class="flex items-center justify-between">
+            <div class="w-8 h-8 rounded-lg bg-${d.color}-500/20 text-${d.color}-400 flex items-center justify-center text-sm">
+              <i class="fa-solid ${d.icon}"></i>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">${d.count}</span>
+          </div>
+          <h3 class="text-xs font-bold text-white">${d.title}</h3>
+          <p class="text-[11px] text-slate-400 leading-relaxed">${d.desc}</p>
+          <div class="text-[10px] font-mono text-slate-500 pt-1 border-t border-slate-800/80">${d.pages}</div>
+        </div>
+      `).join('');
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLines();
+      renderLedgerHistory();
+    });
+  </script>
+</body>
+</html>
