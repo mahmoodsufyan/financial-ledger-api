@@ -12,7 +12,7 @@ class LedgerService:
     def create_voucher(db: Session, data: VoucherCreate, user: str = "system") -> Voucher:
         total_amount = sum(l.debit_amount for l in data.lines)
         v_count = db.query(Voucher).count() + 1
-        voucher_no = f"{data.voucher_type.value}-{datetime.datetime.utcnow().strftime('%Y%m')}-{v_count:04d}"
+        voucher_no = f"{data.voucher_type.value}-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m')}-{v_count:04d}"
 
         voucher = Voucher(
             voucher_no=voucher_no,
@@ -56,7 +56,7 @@ class LedgerService:
             raise HTTPException(status_code=400, detail=f"Only DRAFT vouchers can be reviewed. Current: {voucher.status.value}")
         
         voucher.status = VoucherStatus.REVIEWED
-        voucher.reviewed_at = datetime.datetime.utcnow()
+        voucher.reviewed_at = datetime.datetime.now(datetime.timezone.utc)
         voucher.reviewed_by = reviewer
         db.commit()
         db.refresh(voucher)
@@ -82,7 +82,7 @@ class LedgerService:
             gl_entry = GeneralLedgerEntry(
                 voucher_id=voucher.id,
                 voucher_no=voucher.voucher_no,
-                entry_date=datetime.datetime.utcnow(),
+                entry_date=datetime.datetime.now(datetime.timezone.utc),
                 account_code=line.account_code,
                 debit=line.debit_amount,
                 credit=line.credit_amount,
@@ -95,7 +95,7 @@ class LedgerService:
             db.add(gl_entry)
 
         voucher.status = VoucherStatus.POSTED
-        voucher.posted_at = datetime.datetime.utcnow()
+        voucher.posted_at = datetime.datetime.now(datetime.timezone.utc)
         voucher.posted_by = poster
         db.commit()
         db.refresh(voucher)
