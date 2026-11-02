@@ -7,9 +7,13 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker)](Dockerfile)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A high-precision, production-grade **Double-Entry Financial Accounting and General Ledger Engine** built with Python and FastAPI. Implements rigorous double-entry balancing rules ($\\sum \\text{Debit} == \\sum \\text{Credit}$), a 3-tier voucher state machine (`Draft` ➔ `Reviewed` ➔ `Posted`), hierarchical chart of accounts, real-time trial balance reporting, and automated posting bridges for loan disbursements and remittances.
+> A public portfolio demonstration of a high-precision **Double-Entry Financial Accounting and General Ledger Engine** built with Python and FastAPI. Implements rigorous double-entry balancing rules ($\\sum \\text{Debit} == \\sum \\text{Credit}$), a 3-tier voucher state machine (`Draft` ➔ `Reviewed` ➔ `Posted`), hierarchical chart of accounts, real-time trial balance reporting, and automated posting bridges for loan disbursements and remittances.
 
 ---
+
+## Implementation context
+
+This repository contains a Python/FastAPI portfolio demo. The [Oracle implementation case study](docs/CASE_STUDY.md) describes related Oracle APEX, PL/SQL, and ORDS work. This demo is a separate implementation and does not contain the original enterprise application.
 
 ## 🚀 Key Features
 
@@ -54,5 +58,5 @@ pytest
 ---
 
 ## 📖 Full Engineering Case Study
-Read the full background and architectural history of this production system:
-* 📄 **[Enterprise Case Study: Multi-Currency General Ledger System](../../docs/case-studies/enterprise-financial-accounting-system.md)**
+Read the background and architecture of the related Oracle implementation:
+* 📄 **[Enterprise Case Study: Multi-Currency General Ledger System](docs/CASE_STUDY.md)**
