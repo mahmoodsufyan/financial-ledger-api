@@ -34,14 +34,14 @@
         <div>
           <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
             Enterprise Financial Core & General Ledger
-            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">74 Enterprise Modules</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium">Portfolio Simulator</span>
           </h1>
-          <p class="text-xs text-slate-400">Double-Entry Ledger, 3-Tier Posting Lifecycle & Multi-Currency Revaluation</p>
+          <p class="text-xs text-slate-400">Synthetic browser-side simulation. Use /docs for the separate Python API.</p>
         </div>
       </div>
 
       <div class="flex items-center space-x-3">
-        <a href="../../docs/case-studies/enterprise-financial-accounting-system.md" target="_blank" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
+        <a href="https://github.com/mahmoodsufyan/financial-ledger-api/blob/main/docs/CASE_STUDY.md" target="_blank" class="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center gap-1.5">
           <i class="fa-solid fa-file-lines text-emerald-400"></i> Read Case Study
         </a>
       </div>
@@ -61,7 +61,7 @@
         <i class="fa-solid fa-chart-pie"></i> Trial Balance & FX Revaluation
       </button>
       <button id="tabBtnModules" onclick="switchTab('modules')" class="py-3 px-3 text-sm font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 transition whitespace-nowrap">
-        <i class="fa-solid fa-cubes"></i> 74 Modules Breakdown
+        <i class="fa-solid fa-cubes"></i> Domain Overview
       </button>
     </div>
   </div>
@@ -192,7 +192,7 @@
               <i class="fa-solid fa-shield-halved text-emerald-400"></i> Deterministic 3-Stage Lifecycle
             </h3>
             <p class="text-xs text-slate-400 leading-relaxed">
-              Every financial transaction passes through rigorous transactional validation before reaching the General Ledger:
+              This browser simulator illustrates review and posting stages using synthetic entries:
             </p>
             <div class="grid grid-cols-3 gap-2 pt-1 text-center text-xs">
               <div class="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
@@ -205,7 +205,7 @@
               </div>
               <div class="p-2 rounded-lg bg-slate-800/80 border border-slate-700">
                 <div class="font-bold text-emerald-400">3. Posted</div>
-                <div class="text-[10px] text-slate-500">Immutable Ledger</div>
+                <div class="text-[10px] text-slate-500">Simulated ledger</div>
               </div>
             </div>
           </div>
@@ -344,9 +344,9 @@
       <div class="glass-card rounded-2xl p-5 shadow-xl space-y-4">
         <div class="border-b border-slate-700/60 pb-3">
           <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-            <i class="fa-solid fa-cubes text-emerald-400"></i> 74 Enterprise Modules & Screens Breakdown
+            <i class="fa-solid fa-cubes text-emerald-400"></i> Accounting Domain Overview
           </h2>
-          <p class="text-xs text-slate-400">Direct architecture mapping of all pages and modules extracted from the production APEX system</p>
+          <p class="text-xs text-slate-400">Conceptual Oracle accounting areas; these are not all implemented in this Python demo.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="modulesGrid">
@@ -651,14 +651,14 @@
     function renderModules() {
       const container = document.getElementById('modulesGrid');
       const domains = [
-        { title: 'Journal & Voucher Management', count: '14 Modules', pages: 'Pages 2, 5, 6, 7, 10, 13, 14, 15, 22', icon: 'fa-file-invoice-dollar', color: 'emerald', desc: 'Daily journals, opening entries, payment and cash receipt vouchers with line-item detail.' },
-        { title: 'Supervisory Review & Verification', count: '8 Modules', pages: 'Pages 11, 12, 16, 18, 23', icon: 'fa-clipboard-check', color: 'amber', desc: 'Audit checkpoints for review of daily vouchers before final posting.' },
-        { title: 'Atomic Posting Engine', count: '10 Modules', pages: 'Pages 19, 20, 21, 24, 25', icon: 'fa-lock', color: 'blue', desc: 'ACID double-entry transaction posting into the immutable general ledger.' },
-        { title: 'Chart of Accounts & Cost Centers', count: '12 Modules', pages: 'Pages 3, 4, 28, 29, 30, 31, 41, 42, 55, 56', icon: 'fa-sitemap', color: 'purple', desc: 'Hierarchical tree accounts, bank registers, and branch cost-center security schemes.' },
-        { title: 'Automated Operations & Loan Bridge', count: '10 Modules', pages: 'Pages 43, 45, 46, 47, 50, 52, 53', icon: 'fa-arrows-split-up-and-left', color: 'cyan', desc: 'Auto-posting for loan disbursements, vendor remittances, and Excel batch imports.' },
-        { title: 'Closings & Multi-Currency', count: '8 Modules', pages: 'Pages 26, 27, 35, 36, 38, 39, 40, 44', icon: 'fa-coins', color: 'yellow', desc: 'Fiscal years, currency exchange rates, foreign exchange revaluation, and P&L closing.' },
-        { title: 'Financial Intelligence & Reports', count: '8 Modules', pages: 'Pages 8, 9, 17, 32, 37, 54, 57', icon: 'fa-chart-line', color: 'rose', desc: 'Multi-currency Trial Balance, Cash Flow statements, Ledger explorer, and JasperReports.' },
-        { title: 'Enterprise RBAC & Auditing', count: '10 Modules', pages: 'Pages 58, 10010-10024, 10100', icon: 'fa-user-shield', color: 'indigo', desc: 'Activity dashboard, application error logs, top users, and granular access control.' }
+        { title: 'Journal & Voucher Management', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-file-invoice-dollar', color: 'emerald', desc: 'Daily journals, opening entries, payment and cash receipt vouchers with line-item detail.' },
+        { title: 'Supervisory Review & Verification', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-clipboard-check', color: 'amber', desc: 'Audit checkpoints for review of daily vouchers before final posting.' },
+        { title: 'Atomic Posting Engine', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-lock', color: 'blue', desc: 'ACID double-entry transaction posting into the immutable general ledger.' },
+        { title: 'Chart of Accounts & Cost Centers', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-sitemap', color: 'purple', desc: 'Hierarchical tree accounts, bank registers, and branch cost-center security schemes.' },
+        { title: 'Automated Operations & Loan Bridge', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-arrows-split-up-and-left', color: 'cyan', desc: 'Auto-posting for loan disbursements, vendor remittances, and Excel batch imports.' },
+        { title: 'Closings & Multi-Currency', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-coins', color: 'yellow', desc: 'Fiscal years, currency exchange rates, foreign exchange revaluation, and P&L closing.' },
+        { title: 'Financial Intelligence & Reports', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-chart-line', color: 'rose', desc: 'Multi-currency Trial Balance, Cash Flow statements, Ledger explorer, and JasperReports.' },
+        { title: 'Enterprise RBAC & Auditing', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-user-shield', color: 'indigo', desc: 'Activity dashboard, application error logs, top users, and granular access control.' }
       ];
 
       container.innerHTML = domains.map(d => `

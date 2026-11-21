@@ -10,10 +10,12 @@ from app.db.session import init_db
 init_db()
 
 app = FastAPI(
-    title="🏛️ Enterprise Multi-Currency Financial & General Ledger API",
+    title="Financial Ledger Portfolio Demo API",
     description="""
-## Enterprise Core Accounting & Ledger Engine
-* **Double-Entry Balance Enforcer:** Strict programmatic guarantee $\\sum Debit == \\sum Credit$.
+Local demonstration only. No authentication or production authorization is implemented.
+
+## Local Financial Ledger Portfolio Demo
+* **Double-Entry Input Validation:** Service-level validation of $\\sum Debit == \\sum Credit$.
 * **3-Tier Voucher Lifecycle:** Draft ➔ Review ➔ Atomic Posting.
 * **Hierarchical Chart of Accounts:** Multi-level account trees with normal balance rules.
 * **Automated Integration Bridge:** Instant journal creation for loan disbursements and vendor payouts.

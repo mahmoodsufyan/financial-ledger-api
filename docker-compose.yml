@@ -5,8 +5,8 @@ services:
     build: .
     container_name: financial_ledger_core
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
-      - APP_ENV=production
+      - APP_ENV=demo
       - DATABASE_URL=sqlite:///./ledger.db
     restart: unless-stopped

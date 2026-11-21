@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum as SQLEnum, Text, Boolean
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, ForeignKey, Enum as SQLEnum, Text, Boolean
 from sqlalchemy.orm import relationship
 import enum
 from app.db.session import Base
@@ -41,23 +41,24 @@ class Account(Base):
 
 class Voucher(Base):
     __tablename__ = "vouchers"
+    __table_args__ = {"sqlite_autoincrement": True}
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     voucher_no = Column(String(50), unique=True, index=True, nullable=False)
     voucher_type = Column(SQLEnum(VoucherType), nullable=False, default=VoucherType.JV)
     status = Column(SQLEnum(VoucherStatus), nullable=False, default=VoucherStatus.DRAFT)
     currency = Column(String(10), default="USD")
-    exchange_rate = Column(Float, default=1.0)
+    exchange_rate = Column(Numeric(20, 8), default=1)
     cost_center = Column(String(50), default="HQ-MAIN")
     memo = Column(Text, nullable=False)
-    total_amount = Column(Float, default=0.0)
+    total_amount = Column(Numeric(20, 2), default=0)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     reviewed_at = Column(DateTime, nullable=True)
     posted_at = Column(DateTime, nullable=True)
     reviewed_by = Column(String(50), nullable=True)
     posted_by = Column(String(50), nullable=True)
 
-    lines = relationship("VoucherLine", back_populates="voucher", cascade="all, delete-orphan")
+    lines = relationship("VoucherLine", back_populates="voucher", cascade="all, delete-orphan", order_by="VoucherLine.id")
 
 class VoucherLine(Base):
     __tablename__ = "voucher_lines"
@@ -65,8 +66,8 @@ class VoucherLine(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     voucher_id = Column(Integer, ForeignKey("vouchers.id"), nullable=False)
     account_code = Column(String(20), ForeignKey("accounts.code"), nullable=False)
-    debit_amount = Column(Float, default=0.0)
-    credit_amount = Column(Float, default=0.0)
+    debit_amount = Column(Numeric(20, 2), default=0)
+    credit_amount = Column(Numeric(20, 2), default=0)
     line_memo = Column(String(255), nullable=True)
 
     voucher = relationship("Voucher", back_populates="lines")
@@ -80,11 +81,11 @@ class GeneralLedgerEntry(Base):
     voucher_no = Column(String(50), index=True, nullable=False)
     entry_date = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     account_code = Column(String(20), ForeignKey("accounts.code"), nullable=False)
-    debit = Column(Float, default=0.0)
-    credit = Column(Float, default=0.0)
+    debit = Column(Numeric(20, 2), default=0)
+    credit = Column(Numeric(20, 2), default=0)
     currency = Column(String(10), default="USD")
-    base_debit = Column(Float, default=0.0)
-    base_credit = Column(Float, default=0.0)
+    base_debit = Column(Numeric(20, 2), default=0)
+    base_credit = Column(Numeric(20, 2), default=0)
     cost_center = Column(String(50), default="HQ-MAIN")
     memo = Column(Text, nullable=False)
 

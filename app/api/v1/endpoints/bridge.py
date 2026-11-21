@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from app.core.money import Money, Currency
 from app.db.session import get_db
 from app.db.models import VoucherType
 from app.schemas.voucher import VoucherCreate, VoucherLineCreate
@@ -11,8 +12,8 @@ router = APIRouter()
 class LoanDisbursementRequest(BaseModel):
     loan_contract_id: str
     customer_name: str
-    amount: float
-    currency: str = "USD"
+    amount: Money = Field(gt=0)
+    currency: Currency = "USD"
     bank_account_code: str = "1020"
     loan_portfolio_code: str = "1050"
 

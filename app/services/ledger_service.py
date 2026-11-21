@@ -1,4 +1,6 @@
 import datetime
+from uuid import uuid4
+from app.core.money import ZERO, convert_side
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.db.models import (
@@ -11,8 +13,9 @@ class LedgerService:
     @staticmethod
     def create_voucher(db: Session, data: VoucherCreate, user: str = "system") -> Voucher:
         total_amount = sum(l.debit_amount for l in data.lines)
-        v_count = db.query(Voucher).count() + 1
-        voucher_no = f"{data.voucher_type.value}-{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m')}-{v_count:04d}"
+        # Allocate the permanent sequence from the database primary key.
+        # A unique temporary value allows the first INSERT to allocate that key.
+        voucher_no = f"pending-{uuid4().hex}"
 
         voucher = Voucher(
             voucher_no=voucher_no,
@@ -26,6 +29,8 @@ class LedgerService:
         )
         db.add(voucher)
         db.flush()
+        period = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m")
+        voucher.voucher_no = f"{data.voucher_type.value}-{period}-{voucher.id:08d}"
 
         for line in data.lines:
             # verify account exists
@@ -74,11 +79,13 @@ class LedgerService:
         # Verify double entry balance
         sum_debit = sum(l.debit_amount for l in voucher.lines)
         sum_credit = sum(l.credit_amount for l in voucher.lines)
-        if round(sum_debit, 2) != round(sum_credit, 2) or sum_debit <= 0:
+        if sum_debit != sum_credit or sum_debit <= 0:
             raise HTTPException(status_code=400, detail="Voucher legs are out of balance.")
 
         # Atomic insert into General Ledger
-        for line in voucher.lines:
+        base_debits = convert_side([line.debit_amount for line in voucher.lines], voucher.exchange_rate)
+        base_credits = convert_side([line.credit_amount for line in voucher.lines], voucher.exchange_rate)
+        for line, base_debit, base_credit in zip(voucher.lines, base_debits, base_credits):
             gl_entry = GeneralLedgerEntry(
                 voucher_id=voucher.id,
                 voucher_no=voucher.voucher_no,
@@ -87,8 +94,8 @@ class LedgerService:
                 debit=line.debit_amount,
                 credit=line.credit_amount,
                 currency=voucher.currency,
-                base_debit=line.debit_amount * voucher.exchange_rate,
-                base_credit=line.credit_amount * voucher.exchange_rate,
+                base_debit=base_debit,
+                base_credit=base_credit,
                 cost_center=voucher.cost_center,
                 memo=line.line_memo or voucher.memo
             )
@@ -105,8 +112,8 @@ class LedgerService:
     def get_trial_balance(db: Session):
         accounts = db.query(Account).all()
         items = []
-        total_debit = 0.0
-        total_credit = 0.0
+        total_debit = ZERO
+        total_credit = ZERO
 
         for acc in accounts:
             # sum all GL entries
@@ -115,8 +122,8 @@ class LedgerService:
             sum_c = sum(e.base_credit for e in gl_entries)
 
             net = sum_d - sum_c
-            debit_val = 0.0
-            credit_val = 0.0
+            debit_val = ZERO
+            credit_val = ZERO
 
             if acc.normal_balance == NormalBalance.DEBIT:
                 if net >= 0:
@@ -135,16 +142,16 @@ class LedgerService:
                     "account_name_en": acc.name_en,
                     "account_name_ar": acc.name_ar,
                     "category": acc.category.value,
-                    "debit": round(debit_val, 2),
-                    "credit": round(credit_val, 2)
+                    "debit": debit_val,
+                    "credit": credit_val
                 })
                 total_debit += debit_val
                 total_credit += credit_val
 
         return {
             "base_currency": "USD",
-            "total_debit": round(total_debit, 2),
-            "total_credit": round(total_credit, 2),
-            "is_balanced": round(total_debit, 2) == round(total_credit, 2),
+            "total_debit": total_debit,
+            "total_credit": total_credit,
+            "is_balanced": total_debit == total_credit,
             "items": items
         }

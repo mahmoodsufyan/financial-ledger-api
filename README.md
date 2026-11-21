@@ -1,62 +1,74 @@
-# 🏛️ Enterprise Multi-Currency Financial Ledger & Accounting API
+# Financial Ledger API — Python portfolio demo
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg?logo=python)](https://python.org)
-[![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy%202.0-red.svg)](https://sqlalchemy.org)
-[![Pydantic](https://img.shields.io/badge/Pydantic-v2.6-green.svg)](https://docs.pydantic.dev)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker)](Dockerfile)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://github.com/mahmoodsufyan/financial-ledger-api/actions/workflows/tests.yml/badge.svg)](https://github.com/mahmoodsufyan/financial-ledger-api/actions/workflows/tests.yml)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A public portfolio demonstration of a high-precision **Double-Entry Financial Accounting and General Ledger Engine** built with Python and FastAPI. Implements rigorous double-entry balancing rules ($\\sum \\text{Debit} == \\sum \\text{Credit}$), a 3-tier voucher state machine (`Draft` ➔ `Reviewed` ➔ `Posted`), hierarchical chart of accounts, real-time trial balance reporting, and automated posting bridges for loan disbursements and remittances.
+A small FastAPI/SQLAlchemy demonstration of double-entry voucher validation, review/post transitions, base-currency conversion and trial-balance reporting.
 
----
+Built by **Mahmood Sufyan**, Oracle APEX & PL/SQL developer working on AI applications and Python backends. [Portfolio](https://mahmoodsufyan.github.io/oracle-apex-portfolio/) · [Related Oracle case study](docs/CASE_STUDY.md)
 
-## Implementation context
+## Preview
 
-This repository contains a Python/FastAPI portfolio demo. The [Oracle implementation case study](docs/CASE_STUDY.md) describes related Oracle APEX, PL/SQL, and ORDS work. This demo is a separate implementation and does not contain the original enterprise application.
+![Financial ledger browser simulator with synthetic data](docs/images/dashboard.png)
 
-## 🚀 Key Features
+The dashboard is a **browser-side simulator using synthetic data**, separate from the Python API. Its actions do not persist API vouchers. Open `/docs` to exercise the actual backend. The domain overview describes broader Oracle accounting concepts; it is not a list of implemented demo features.
 
-* **Strict Double-Entry Enforcement:** Programmatic guarantees preventing unbalanced voucher creation at the Pydantic and database levels.
-* **3-Stage Transaction Lifecycle:** `DRAFT` (Data Entry) ➔ `REVIEWED` (Supervisory Check) ➔ `POSTED` (Atomic Ledger Write).
-* **Hierarchical Chart of Accounts:** Multi-level parent-child tree mapping assets, liabilities, equity, revenues, and expenses with normal balance classifications.
-* **Automated Operational Bridges:** Direct endpoints generating balanced atomic journal entries from external credit/loan disbursements and supplier remittances.
-* **Real-Time Financial Intelligence:** Instant on-demand generation of consolidated **Trial Balances** and ledger summaries.
-* **Interactive Web Dashboard:** Built-in responsive UI with double-entry simulator, chart of accounts explorer, and financial breakdown charts.
+## Implemented API behavior
 
----
+- Chart of accounts and balanced voucher creation.
+- `DRAFT → REVIEWED → POSTED` transitions; sequential repeat posting is rejected.
+- Decimal input and SQLAlchemy `Numeric` money columns, with excess fractional digits rejected.
+- Database-allocated voucher IDs used in unique human-readable voucher numbers.
+- Conversion to USD with cumulative cent allocation on each journal side to preserve balance.
+- Trial balance and a simple loan-disbursement bridge.
 
-## 🛠️ Quick Start
+## Local setup
 
-### 1. Local Setup
+Use Python 3.11 or newer, create a virtual environment, then:
+
 ```bash
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Run server
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-* **Interactive Web Dashboard:** [http://localhost:8000/](http://localhost:8000/)
-* **Interactive Swagger UI:** [http://localhost:8000/docs](http://localhost:8000/docs)
-* **ReDoc Documentation:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
+Local URLs after startup: [dashboard](http://127.0.0.1:8000/), [API docs](http://127.0.0.1:8000/docs), [health](http://127.0.0.1:8000/health).
 
-### 2. Run with Docker
+Alternatively, `docker compose up --build` binds port 8000 to localhost. These are local preview addresses, not hosted public demos.
+
+## Example: create, review and post a voucher
+
+Send `POST /api/v1/vouchers/` with this JSON using `/docs` or an HTTP client:
+
+```json
+{
+  "memo": "Synthetic cash transfer",
+  "currency": "USD",
+  "exchange_rate": "1.00000000",
+  "lines": [
+    {"account_code": "1010", "debit_amount": "12.34"},
+    {"account_code": "1020", "credit_amount": "12.34"}
+  ]
+}
+```
+
+The response includes an allocated `id`, a number such as `JV-YYYYMM-00000001`, `status: "DRAFT"`, and `total_amount: "12.34"`. Then call `POST /api/v1/vouchers/{id}/review` and `POST /api/v1/vouchers/{id}/post`. Decimal response fields are JSON strings to preserve precision.
+
+Amounts use at most two decimal places. Supported currencies are USD, EUR, GBP, SAR, AED and YER; currencies with other minor-unit conventions are deliberately excluded. The base currency is USD. Exchange rates accept up to eight fractional digits, below 10,000. Voucher totals must be below one trillion units. `1.004`, negative/non-finite amounts and unsupported currencies return validation errors.
+
+## Tests and CI
+
 ```bash
-docker-compose up --build
+python -m pytest -q
 ```
 
-### 3. Run Automated Test Suite
-```bash
-pytest
-```
+Tests use a disposable database, never an existing `ledger.db`. GitHub Actions runs the suite on Python 3.11 and 3.13. Regression coverage includes sub-cent rejection, decimal round trips, split-line FX rounding, sequential repeat-post rejection and concurrent voucher creation. This does not establish production-grade concurrent posting safety.
 
----
+## Boundaries and storage compatibility
 
-## 📖 Full Engineering Case Study
-Read the background and architecture of the related Oracle implementation:
-* 📄 **[Enterprise Case Study: Multi-Currency General Ledger System](docs/CASE_STUDY.md)**
+- This is a local portfolio demo. Authentication, RBAC and segregation of duties are **not implemented**. Reviewer/poster names are demonstration inputs, not verified identities.
+- Input and service checks enforce the demonstrated balance rules; there is no database constraint guaranteeing cross-row voucher balance against direct database writes.
+- SQLite is the default demonstration database. Its numeric affinity does not provide PostgreSQL-style native fixed-decimal guarantees. PostgreSQL integration and production concurrency are not certified by these SQLite tests.
+- The bridge does not implement retry idempotency. Fiscal closing, FX revaluation, compliance controls and immutable audit storage are outside the demo scope.
+- Schema changes are for a fresh demo database. `create_all()` does not migrate an existing database. Preserve any existing database and use a new `DATABASE_URL` for this version; no destructive migration/reset is supplied.
+- The original Oracle application and company data are private. The related case study is an anonymized overview, not a claim that this demo contains the enterprise system.
