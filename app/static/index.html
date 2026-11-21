@@ -510,7 +510,7 @@
         };
         ledgerHistory.unshift(newRecord);
         renderLedgerHistory();
-        alert('Voucher posted successfully to General Ledger with immutable audit log!');
+        alert('Simulated voucher posted to the browser ledger. No API request was sent.');
       }
     }
 
@@ -653,7 +653,7 @@
       const domains = [
         { title: 'Journal & Voucher Management', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-file-invoice-dollar', color: 'emerald', desc: 'Daily journals, opening entries, payment and cash receipt vouchers with line-item detail.' },
         { title: 'Supervisory Review & Verification', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-clipboard-check', color: 'amber', desc: 'Audit checkpoints for review of daily vouchers before final posting.' },
-        { title: 'Atomic Posting Engine', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-lock', color: 'blue', desc: 'ACID double-entry transaction posting into the immutable general ledger.' },
+        { title: 'Atomic Posting Engine', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-lock', color: 'blue', desc: 'Transactional double-entry posting and a traceable general-ledger history.' },
         { title: 'Chart of Accounts & Cost Centers', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-sitemap', color: 'purple', desc: 'Hierarchical tree accounts, bank registers, and branch cost-center security schemes.' },
         { title: 'Automated Operations & Loan Bridge', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-arrows-split-up-and-left', color: 'cyan', desc: 'Auto-posting for loan disbursements, vendor remittances, and Excel batch imports.' },
         { title: 'Closings & Multi-Currency', count: 'Conceptual area', pages: 'Oracle overview; not a demo feature inventory', icon: 'fa-coins', color: 'yellow', desc: 'Fiscal years, currency exchange rates, foreign exchange revaluation, and P&L closing.' },
