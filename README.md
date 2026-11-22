@@ -6,7 +6,7 @@
 
 A small FastAPI/SQLAlchemy demonstration of double-entry voucher validation, review/post transitions, base-currency conversion and trial-balance reporting.
 
-Built by **Mahmood Sufyan**, Oracle APEX & PL/SQL developer working on AI applications and Python backends. [Portfolio](https://mahmoodsufyan.github.io/oracle-apex-portfolio/) · [Related Oracle case study](docs/CASE_STUDY.md)
+Built by **Mahmood Sufyan**, Oracle APEX & PL/SQL developer working on AI applications and Python backends. [Portfolio](https://mahmoodsufyan.github.io/) · [Related Oracle case study](docs/CASE_STUDY.md)
 
 ## Preview
 
