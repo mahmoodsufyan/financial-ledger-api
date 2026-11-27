@@ -1,5 +1,7 @@
 # Oracle APEX accounting and general-ledger workflows
 
+[Oracle systems at the National Microfinance Foundation](https://mahmoodsufyan.github.io/national-microfinance.html) · [دراسة الحالة بالعربية](https://mahmoodsufyan.github.io/national-microfinance-ar.html)
+
 ## Context and ownership
 
 This is an anonymized overview of my Oracle APEX, PL/SQL and ORDS work on financial applications. The original company source code, customer data and production environment remain private.
